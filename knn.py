@@ -14,7 +14,7 @@ st.write("Aplikasi ini menggunakan model KNN untuk memprediksi apakah mahasiswa 
 # Load Data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("Kelulusan_Test.csv")
+    df = pd.read_csv("kelulusan_mhs.csv")
     df = df.drop(columns=["NAMA", "STATUS MAHASISWA"], errors='ignore')
     df = df.fillna(0)
     return df
