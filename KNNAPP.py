@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
@@ -16,7 +16,13 @@ st.write("Aplikasi ini menggunakan model KNN untuk memprediksi apakah mahasiswa 
 def load_data():
     df = pd.read_csv("kelulusan_test.csv")
     df = df.drop(columns=["NAMA", "STATUS MAHASISWA"], errors='ignore')
-    df = df.fillna(0)
+    
+    # Isi nilai kosong dengan rata-rata
+    for col in df.columns:
+        if df[col].dtype in ['float64', 'int64']:
+            df[col].fillna(df[col].mean(), inplace=True)
+        else:
+            df[col].fillna(df[col].mode()[0], inplace=True)
     return df
 
 df = load_data()
@@ -29,6 +35,11 @@ for col in label_cols:
     le = LabelEncoder()
     df[col] = le.fit_transform(df[col])
     le_dict[col] = le
+
+# Normalisasi fitur numerik
+num_cols = ['UMUR'] + [f'IPS {i}' for i in range(1, 9)] + ['IPK']
+scaler = MinMaxScaler()
+df[num_cols] = scaler.fit_transform(df[num_cols])
 
 # Fitur dan Target
 X = df.drop(columns=['STATUS KELULUSAN'])
@@ -51,7 +62,8 @@ st.write(f"Akurasi: {akurasi:.2f}")
 
 try:
     target_names = le_dict['STATUS KELULUSAN'].classes_
-    st.text(classification_report(y_test, y_pred, target_names=target_names))
+    report = classification_report(y_test, y_pred, target_names=target_names, output_dict=True)
+    st.dataframe(pd.DataFrame(report).transpose())
 except:
     st.warning("Gagal menampilkan classification report karena masalah label.")
 
@@ -60,6 +72,7 @@ st.subheader("📈 Distribusi Status Kelulusan")
 fig1, ax1 = plt.subplots()
 sns.countplot(data=df, x='STATUS KELULUSAN', ax=ax1)
 ax1.set_xticklabels(le_dict['STATUS KELULUSAN'].classes_)
+ax1.set_ylabel("Jumlah Mahasiswa")
 st.pyplot(fig1)
 
 # Visualisasi 2: Distribusi IPK berdasarkan Status Kelulusan
@@ -77,7 +90,7 @@ fig3, ax3 = plt.subplots()
 mean_ips.plot(kind='line', marker='o', ax=ax3)
 ax3.set_title("Rata-rata IPS Semester")
 ax3.set_xlabel("Semester")
-ax3.set_ylabel("IPS")
+ax3.set_ylabel("IPS (Ternormalisasi)")
 st.pyplot(fig3)
 
 # Form Input Data Mahasiswa Baru
@@ -93,17 +106,36 @@ for i in range(1, 9):
 
 ipk = st.slider("IPK", 0.00, 4.00, 3.00, step=0.01)
 
+# Normalisasi input baru
+input_data = pd.DataFrame([[
+    umur, *ips_values, ipk
+]], columns=['UMUR'] + ips_cols + ['IPK'])
+input_data[num_cols] = scaler.transform(input_data[num_cols])
+
 # Prediksi
 if st.button("🔮 Prediksi Kelulusan"):
-    input_data = pd.DataFrame([[
+    encoded_input = pd.DataFrame([[
         le_dict['JENIS KELAMIN'].transform([jenis_kelamin])[0],
-        umur,
+        input_data.iloc[0]['UMUR'],
         le_dict['STATUS NIKAH'].transform([status_nikah])[0],
-        *ips_values,
-        ipk
+        *input_data.iloc[0][ips_cols],
+        input_data.iloc[0]['IPK']
     ]], columns=X.columns)
 
-    hasil_prediksi = knn.predict(input_data)[0]
+    hasil_prediksi = knn.predict(encoded_input)[0]
     hasil_label = le_dict['STATUS KELULUSAN'].inverse_transform([hasil_prediksi])[0]
 
-    st.success(f"📌 Prediksi: Mahasiswa akan {hasil_label.upper()} waktu.")
+    st.success(f"📌 Prediksi: Mahasiswa akan {hasil_label.upper()} waktu.")
+
+    # Buat DataFrame hasil untuk diunduh
+    download_df = pd.DataFrame({
+        'Jenis Kelamin': [jenis_kelamin],
+        'Status Nikah': [status_nikah],
+        'Umur': [umur],
+        **{f'IPS {i+1}': [ips_values[i]] for i in range(8)},
+        'IPK': [ipk],
+        'Prediksi Kelulusan': [hasil_label.upper()]
+    })
+
+    csv = download_df.to_csv(index=False).encode('utf-8')
+    st.download_button("📥 Download Hasil Prediksi", csv, "hasil_prediksi_mahasiswa.csv", "text/csv")
