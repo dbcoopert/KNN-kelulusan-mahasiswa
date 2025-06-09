@@ -137,5 +137,5 @@ if st.button("🔮 Prediksi Kelulusan"):
         'Prediksi Kelulusan': [hasil_label.upper()]
     })
 
-    csv = download_df.to_csv(index=False).encode('utf-8')
+    csv = download_df.to_csv(index=False).encode("utf-8")
     st.download_button("📥 Download Hasil Prediksi", csv, "hasil_prediksi_mahasiswa.csv", "text/csv")
