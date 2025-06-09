@@ -127,3 +127,15 @@ if st.button("🔮 Prediksi Kelulusan"):
 
     st.success(f"📌 Prediksi: Mahasiswa akan {hasil_label.upper()} waktu.")
 
+# Buat DataFrame hasil untuk diunduh
+    download_df = pd.DataFrame({
+        'Jenis Kelamin': [jenis_kelamin],
+        'Status Nikah': [status_nikah],
+        'Umur': [umur],
+        **{f'IPS {i+1}': [ips_values[i]] for i in range(8)},
+        'IPK': [ipk],
+        'Prediksi Kelulusan': [hasil_label.upper()]
+    })
+
+    csv = download_df.to_csv(index=False).encode('utf-8')
+    st.download_button("📥 Download Hasil Prediksi", csv, "hasil_prediksi_mahasiswa.csv", "text/csv")
