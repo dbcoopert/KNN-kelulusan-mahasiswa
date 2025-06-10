@@ -94,7 +94,8 @@ ax3.set_ylabel("IPS (Ternormalisasi)")
 st.pyplot(fig3)
 
 # Form Input Data Mahasiswa Baru
-st.subheader("📝 Input Data Mahasiswa Baru")
+st.subheader("📝 Input Data Mahasiswa Baru") 
+nama = st.text_input("Nama Mahasiswa")
 jenis_kelamin = st.selectbox("Jenis Kelamin", le_dict['JENIS KELAMIN'].classes_)
 status_nikah = st.selectbox("Status Nikah", le_dict['STATUS NIKAH'].classes_)
 umur = st.slider("Umur", 18, 35, 24)
@@ -129,6 +130,7 @@ if st.button("🔮 Prediksi Kelulusan"):
 
 # Buat DataFrame hasil prediksi untuk diunduh
     download_df = pd.DataFrame({
+        'Nama': [nama], 
         'Jenis Kelamin': [jenis_kelamin],
         'Status Nikah': [status_nikah],
         'Umur': [umur],
