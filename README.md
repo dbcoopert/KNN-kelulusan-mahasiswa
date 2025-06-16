@@ -1,5 +1,5 @@
 # 🎓 Prediksi Status Kelulusan Mahasiswa
-Aplikasi berbasis web untuk memprediksi apakah seorang mahasiswa akan *lulus tepat waktu atau terlambat* menggunakan algoritma *K-Nearest Neighbors (KNN). Aplikasi ini dibuat menggunakan **Python* dan *Streamlit*.
+Aplikasi berbasis web untuk memprediksi apakah seorang mahasiswa akan *lulus tepat waktu atau terlambat* menggunakan algoritma K-Nearest Neighbors (KNN). Aplikasi ini dibuat menggunakan Python dan Streamlit.
 
 ## 📌 Deskripsi Singkat
 Proyek ini bertujuan untuk membantu pihak akademik dalam memantau potensi kelulusan mahasiswa berdasarkan data akademik seperti IPS tiap semester, IPK, umur, status nikah, dan jenis kelamin. Model prediksi dibangun menggunakan pendekatan supervised learning (KNN), dilatih dari dataset kelulusan mahasiswa.
