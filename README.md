@@ -39,6 +39,9 @@ Proyek ini bertujuan untuk membantu pihak akademik dalam memantau potensi kelulu
    streamlit run KNNAPP.py
    ```
 
+## 🏞 Tampilan di Streamlit
+[Streamlit](https://knn-kelulusan-mahasiswa.streamlit.app/)
+
 ## 📃 Lisensi
   Proyek ini dibuat untuk keperluan edukasi dan tugas UAS. Bebas digunakan dan dimodifikasi.
 
