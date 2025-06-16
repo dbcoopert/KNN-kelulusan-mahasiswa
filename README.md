@@ -36,7 +36,7 @@ Proyek ini bertujuan untuk membantu pihak akademik dalam memantau potensi kelulu
 2. Install dependensi:
    ```bash
    pip install -r requirements.txt
-   atreamlit run KNNAPP.py
+   streamlit run KNNAPP.py
    ```
 
 ## 📃 Lisensi
